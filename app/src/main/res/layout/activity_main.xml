@@ -6,167 +6,184 @@
 
     <LinearLayout
         android:id="@+id/date"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:orientation="horizontal">
 
         <Button
-            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/pre"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/meal_pre"/>
+            android:text="@string/meal_pre" />
 
         <Button
-            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/next"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/meal_next"/>
+            android:text="@string/meal_next" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/title"
-        android:orientation="horizontal"
-        android:layout_below="@+id/date"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/date"
+        android:orientation="horizontal">
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textAlignment="center"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/meal_type"
-            android:id="@+id/itemView_type" />
-        <TextView
+            android:id="@+id/itemView_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:text="@string/meal_type"
             android:textAlignment="center"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/itemView_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
             android:text="@string/meal_name"
-            android:id="@+id/itemView_name" />
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
         <TextView
+            android:id="@+id/itemView_cost"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textAlignment="center"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_weight="3"
             android:text="@string/meal_cost"
-            android:id="@+id/itemView_cost" />
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
         <TextView
+            android:id="@+id/itemView_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textAlignment="center"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_weight="3"
             android:text="@string/meal_count"
-            android:id="@+id/itemView_count" />
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/data"
-        android:orientation="vertical"
-        android:layout_below="@+id/title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title"
+        android:layout_above="@+id/meal_sum"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_weight="5"
                 android:text="@string/meal_breakfast"
                 android:textAlignment="center"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_weight="4"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ListView
+                android:id="@+id/listView1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/listView1" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>
+
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_weight="5"
                 android:text="@string/meal_launch"
                 android:textAlignment="center"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_weight="4"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ListView
+                android:id="@+id/listView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/listView2" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>
+
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_weight="5"
                 android:text="@string/meal_dinner"
                 android:textAlignment="center"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_weight="4"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ListView
+                android:id="@+id/listView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/listView3" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>
+
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_weight="5"
                 android:text="@string/meal_nightsnake"
                 android:textAlignment="center"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_weight="4"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ListView
+                android:id="@+id/listView4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/listView4" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/meal_sum"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/data"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="￥10"
-        android:id="@+id/totalPrice" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:id="@+id/totalPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/meal_default_total_cost"
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </LinearLayout>
 
 
 </RelativeLayout>

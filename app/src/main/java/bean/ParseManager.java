@@ -60,4 +60,21 @@ public class ParseManager {
         return null;
     }
 
+    public String getTotalPriceByDate(String date)
+    {
+        int sum = 0;
+        List<MealList> lists = getMealByDate(date);
+
+        for (MealList list : lists)
+        {
+            for (Meal meal : list.getMealList())
+            {
+                if(Integer.valueOf(meal.getOrderCount()) > 0) {
+                    sum += Integer.valueOf(meal.getOrderCount()) * Integer.valueOf(meal.getOriPrice());
+                }
+            }
+        }
+
+        return Integer.toString(sum);
+    }
 }

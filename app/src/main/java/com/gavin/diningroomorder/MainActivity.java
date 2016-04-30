@@ -1,6 +1,5 @@
 package com.gavin.diningroomorder;
 
-import android.app.ActionBar;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -196,6 +195,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                Toast.makeText(getBaseContext(), clickedMeal.getOrderCount(), Toast.LENGTH_SHORT).show();
             }
         });
+
+        TextView textView = (TextView) findViewById(R.id.totalPrice);
+        textView.setText(String.format("总价￥%s", ParseManager.getInstance().getTotalPriceByDate(mealRequest.getDate())));
     }
 
     @Override

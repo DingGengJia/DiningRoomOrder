@@ -18,4 +18,5 @@
     <string name="meal_defaultname">茶叶蛋</string>
     <string name="meal_defaultcost">￥2</string>
     <string name="meal_defaultcount">0</string>
+    <string name="meal_default_total_cost">总价￥10</string>
 </resources>
