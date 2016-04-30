@@ -1,6 +1,8 @@
 package com.gavin.diningroomorder;
 
+import android.app.DatePickerDialog;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,9 +15,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import net.BusinessManager;
 import net.BusinessRequest;
@@ -36,12 +43,17 @@ import util.Util;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IBusinessDeleage {
 
     private static final String LOG_TAG = "MainActivity";
-//    HttpUtil httpUtil;
+    //    HttpUtil httpUtil;
     Button btnPreDate, btnNextDate;
     TextView textDate;
-//    WebView mWebView;
+    //    WebView mWebView;
 //    TextView mTextView;
     Calendar cal = Calendar.getInstance();
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +69,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnNextDate.setOnClickListener(this);
 
         textDate = (TextView) findViewById(R.id.textView_date);
+        textDate.setClickable(true);
+        textDate.setFocusable(true);
+        textDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(LOG_TAG, "textdate clicked");
+                DatePickerDialog dateDlg = new DatePickerDialog(MainActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                                cal.set(Calendar.YEAR, year);
+                                cal.set(Calendar.MONTH, monthOfYear);
+                                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                                BusinessManager.getInstance(MainActivity.this).requestMeal(Util.getDateString(cal), MainActivity.this);
+                                updateDate();
+                            }
+                        },
+                        cal.get(Calendar.YEAR),
+                        cal.get(Calendar.MONTH),
+                        cal.get(Calendar.DAY_OF_MONTH));
+                dateDlg.show();
+            }
+        });
 
 //        mWebView = (WebView) findViewById(R.id.webview);
 //        httpUtil = new HttpUtil();
 //        httpUtil.setCookie(PreferenceUtil.getCookie(getApplication()));
 
         BusinessManager.getInstance(this).requestMeal(Util.getDateString(cal), this);
-        textDate.setText(Util.getDateWeekString(cal));
+        updateDate();
 
         //http://kolvin.cn/Meal/GetMealByDateAndType?date=2016-04-11&type=2&_=1460045964215
         //http://kolvin.cn/Meal/GetMyMeal?date=2016-04-07&type=1
@@ -79,6 +114,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                return true;
 //            }
 //        });
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private Handler handler = new Handler() {
@@ -139,26 +177,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        switch (v.getId())
-        {
+        switch (v.getId()) {
             case R.id.pre:
                 cal.add(Calendar.DAY_OF_YEAR, -1);
                 BusinessManager.getInstance(this).requestMeal(Util.getDateString(cal), this);
-                textDate.setText(Util.getDateWeekString(cal));
+                updateDate();
                 break;
             case R.id.next:
                 cal.add(Calendar.DAY_OF_YEAR, 1);
                 BusinessManager.getInstance(this).requestMeal(Util.getDateString(cal), this);
-                textDate.setText(Util.getDateWeekString(cal));
+                updateDate();
                 break;
         }
     }
 
-    private int getViewIdByMealType(String type)
-    {
+    private void updateDate() {
+        textDate.setText(Util.getDateWeekString(cal));
+    }
+
+    private int getViewIdByMealType(String type) {
         int id = 0;
-        switch (type)
-        {
+        switch (type) {
             case "1":
                 id = R.id.listView1;
                 break;
@@ -172,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 id = R.id.listView4;
                 break;
             default:
-                Log.e(LOG_TAG, "meal type(" + type +") error");
+                Log.e(LOG_TAG, "meal type(" + type + ") error");
         }
 
         return id;
@@ -181,12 +220,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onProcessSuccess(BusinessRequest request, int statusCode, Header[] headers, byte[] response, IBusinessDeleage deleage) {
 
-        MealRequest mealRequest = (MealRequest)request;
+        MealRequest mealRequest = (MealRequest) request;
         String jsonData = new String(response);
         ParseManager.getInstance().parseMealDayList(mealRequest.getDate(), mealRequest.getType(), jsonData);
 
         ArrayAdapter<Meal> adapter = new MealAdapter(mealRequest.getDate(), mealRequest.getType());
-        ListView list = (ListView) findViewById(getViewIdByMealType(mealRequest.getType()));;
+        ListView list = (ListView) findViewById(getViewIdByMealType(mealRequest.getType()));
+        ;
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -212,26 +252,66 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Toast.makeText(MainActivity.this, "请求超时，请检查网络连接", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.gavin.diningroomorder/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.gavin.diningroomorder/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
+    }
+
     private class MealAdapter extends ArrayAdapter<Meal> {
         private String date = null;
         private String type = null;
         List<Meal> mealList = null;
+
         public MealAdapter(String date, String type) {
             super(MainActivity.this, R.layout.item_view, (List<Meal>) ParseManager.getInstance().getMealByDate(date, type).getMealList());
             this.date = date;
             this.type = type;
-            this.mealList = (List<Meal>)ParseManager.getInstance().getMealByDate(date, type).getMealList();
+            this.mealList = (List<Meal>) ParseManager.getInstance().getMealByDate(date, type).getMealList();
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View itemView = convertView;
-            if (itemView == null)
-            {
+            if (itemView == null) {
                 itemView = getLayoutInflater().inflate(R.layout.item_view, parent, false);
             }
 
-            if(null != mealList) {
+            if (null != mealList) {
                 Meal currentMeal = mealList.get(position);
 
                 TextView nameText = (TextView) itemView.findViewById(R.id.itemView_name);
@@ -252,8 +332,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private int getColorByMealType(String type) {
         int color = 0;
-        switch (type)
-        {
+        switch (type) {
             case "1":
                 color = Color.BLUE;
                 break;
@@ -267,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 color = Color.YELLOW;
                 break;
             default:
-                Log.e(LOG_TAG, "meal type(" + type +") error");
+                Log.e(LOG_TAG, "meal type(" + type + ") error");
         }
 
         return color;
