@@ -17,6 +17,10 @@ public class Meal {
     private String ResidueCount = "0";    // 剩余份数
     private String OrderCount = "0";
 
+    private String Type = "";
+    private String Date = "";
+
+
     public Meal(JSONObject jsonData) {
         try {
             MealID = jsonData.getString("MealID");
@@ -94,5 +98,21 @@ public class Meal {
 
     public void setOrderCount(String orderCount) {
         OrderCount = orderCount;
+    }
+
+    public String getType() {
+        return Type;
+    }
+
+    public void setType(String type) {
+        Type = type;
+    }
+
+    public String getDate() {
+        return Date;
+    }
+
+    public void setDate(String date) {
+        Date = date;
     }
 }

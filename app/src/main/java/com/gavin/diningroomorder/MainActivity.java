@@ -1,13 +1,15 @@
 package com.gavin.diningroomorder;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,11 +18,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -36,23 +37,24 @@ import bean.ParseManager;
 import cz.msebera.android.httpclient.Header;
 import logic.MealRequest;
 import util.Util;
+import widget.InnerListView;
+import widget.NumberPickerView;
 
 /**
  * Created by gavinding on 16/4/4.
  */
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, IBusinessDeleage {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, IBusinessDeleage, NumberPickerView.INumberPickerView {
 
     private static final String LOG_TAG = "MainActivity";
     //    HttpUtil httpUtil;
     Button btnPreDate, btnNextDate;
-    TextView textDate;
+    TextView textDate, textTotalPrice;
     //    WebView mWebView;
 //    TextView mTextView;
+     PopupWindow popupWindow;
     Calendar cal = Calendar.getInstance();
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
+
+    ArrayAdapter arrayAdapter;
     private GoogleApiClient client;
 
     @Override
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        mWebView.loadUrl("http://kolvin.cn");
         btnPreDate = (Button) findViewById(R.id.pre);
         btnNextDate = (Button) findViewById(R.id.next);
+        textTotalPrice = (TextView) findViewById(R.id.totalPrice);
 //        mTextView = (TextView) findViewById(R.id.content);
 //
         btnPreDate.setOnClickListener(this);
@@ -224,15 +227,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String jsonData = new String(response);
         ParseManager.getInstance().parseMealDayList(mealRequest.getDate(), mealRequest.getType(), jsonData);
 
-        ArrayAdapter<Meal> adapter = new MealAdapter(mealRequest.getDate(), mealRequest.getType());
-        ListView list = (ListView) findViewById(getViewIdByMealType(mealRequest.getType()));
-        ;
+       final ArrayAdapter<Meal> adapter = new MealAdapter(mealRequest.getDate(), mealRequest.getType());
+        InnerListView list = (InnerListView) findViewById(getViewIdByMealType(mealRequest.getType()));
+
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Toast.makeText(getBaseContext(), "" + view.getId(), Toast.LENGTH_SHORT).show();
+                Meal meal = adapter.getItem(position);
+                Toast.makeText(getBaseContext(), "meal type=" + meal.getType() + "on item click " + view.getId() + " parent " + parent.getId(), Toast.LENGTH_SHORT).show();
 //                Meal clickedMeal = mealList.get(position);
 //                clickedMeal.setOrderCount(clickedMeal.getOrderCount() + 1);
 //
@@ -240,11 +244,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                countText.setText(clickedMeal.getOrderCount());
 //
 //                Toast.makeText(getBaseContext(), clickedMeal.getOrderCount(), Toast.LENGTH_SHORT).show();
+
+//                Intent intent = new Intent(MainActivity.this, NumberPickerActivity.class);
+//                intent.putExtra("currentValue", 1);
+//                startActivityForResult(intent, 1000);
+                arrayAdapter = adapter;
+                showPopupWindow(view, meal);
             }
         });
 
-        TextView textView = (TextView) findViewById(R.id.totalPrice);
-        textView.setText(String.format("总价￥%s", ParseManager.getInstance().getTotalPriceByDate(mealRequest.getDate())));
+        updateTotalPrice(mealRequest.getDate());
+    }
+
+    private void updateTotalPrice(String date) {
+        textTotalPrice.setText(String.format("总价￥%s", ParseManager.getInstance().getTotalPriceByDate(date)));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1000 && resultCode == 1000) {
+            Log.d(LOG_TAG, "get result from numberpicker " + data.getStringExtra("result"));
+        }
     }
 
     @Override
@@ -253,43 +275,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.gavin.diningroomorder/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
+    public void submit(Meal meal) {
+        Toast.makeText(MainActivity.this, "submit", Toast.LENGTH_SHORT).show();
+        cancle();
+        if(arrayAdapter!=null)
+        {
+            arrayAdapter.notifyDataSetChanged();
+            updateTotalPrice(meal.getDate());
+        }
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.gavin.diningroomorder/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
+    public void cancle() {
+        if(popupWindow!=null)
+        popupWindow.dismiss();
     }
 
     private class MealAdapter extends ArrayAdapter<Meal> {
@@ -350,5 +349,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         return color;
+    }
+
+
+    private void showPopupWindow(View view, Meal meal) {
+        NumberPickerView contentView = (NumberPickerView) LayoutInflater.from(this).inflate(
+                R.layout.view_number_picker, null);
+        contentView.setDelegate(this);
+        contentView.setMeal(meal);
+        popupWindow = new PopupWindow(contentView,
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        popupWindow.setTouchable(true);
+        // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+        // 我觉得这里是API的一个bug
+        popupWindow.setBackgroundDrawable(getResources().getDrawable(R.color.color_55555));
+        // 设置好参数之后再show
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
     }
 }

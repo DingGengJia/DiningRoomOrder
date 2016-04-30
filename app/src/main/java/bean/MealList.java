@@ -29,6 +29,8 @@ public class MealList {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = (JSONObject) jsonArray.get(i);
                 Meal meal = new Meal(jsonObject);
+                meal.setDate(date);
+                meal.setType(type);
                 mMealList.add(meal);
             }
         } catch (JSONException e) {

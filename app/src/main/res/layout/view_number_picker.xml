@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget.NumberPickerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/number_picker_activity"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/number_picker_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/select_meal_count_text"
+        android:textAlignment="center" />
+
+    <NumberPicker
+        android:id="@+id/number_picker"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content">
+
+    </NumberPicker>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/number_picker_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/number_picker_cancel_text"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/number_picker_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/number_picker_confrim_text"
+            android:textAlignment="center" />
+
+    </LinearLayout>
+</widget.NumberPickerView>

@@ -20,4 +20,7 @@
     <string name="meal_defaultcount">0</string>
     <string name="meal_default_total_cost">总价￥10</string>
     <string name="meal_default_date">2016年5月1日(星期天)</string>
+    <string name="select_meal_count_text">选择份数</string>
+    <string name="number_picker_confrim_text">确定</string>
+    <string name="number_picker_cancel_text">取消</string>
 </resources>
