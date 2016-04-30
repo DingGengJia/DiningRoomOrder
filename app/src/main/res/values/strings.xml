@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">DiningRoomOrder</string>
+    <string name="action_settings">Settings</string>
+    <string name="host">http://kolvin.cn</string>
+    <string name="login_addr">/Home/Login</string>
+    <string name="mymeal_addr">/UserMeal/GetMyMeal</string>
+    <string name="meal_addr">/Meal/GetMealByDateAndType</string>
+    <string name="meal_name">菜名</string>
+    <string name="meal_cost">单价</string>
+    <string name="meal_count">份数</string>
+    <string name="meal_type">时段</string>
+    <string name="meal_breakfast">早餐</string>
+    <string name="meal_pre">前一天</string>
+    <string name="meal_next">下一天</string>
+</resources>
