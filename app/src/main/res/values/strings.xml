@@ -12,4 +12,10 @@
     <string name="meal_breakfast">早餐</string>
     <string name="meal_pre">前一天</string>
     <string name="meal_next">下一天</string>
+    <string name="meal_launch">午餐</string>
+    <string name="meal_dinner">晚餐</string>
+    <string name="meal_nightsnake">宵夜</string>
+    <string name="meal_defaultname">茶叶蛋</string>
+    <string name="meal_defaultcost">￥2</string>
+    <string name="meal_defaultcount">0</string>
 </resources>

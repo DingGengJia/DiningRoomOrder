@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="字字字字字字"
+        android:text="@string/meal_defaultname"
         android:textAlignment="center"
         android:id="@+id/itemView_name"
         android:textIsSelectable="false"/>
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="3.5"
+        android:text="@string/meal_defaultcost"
         android:textAlignment="center"
         android:id="@+id/itemView_cost"
         android:textIsSelectable="false"/>
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="1"
+        android:text="@string/meal_defaultcount"
         android:textAlignment="center"
         android:id="@+id/itemView_count"
         android:textIsSelectable="false" />
