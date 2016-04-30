@@ -11,7 +11,7 @@
     <string name="meal_type">时段</string>
     <string name="meal_breakfast">早餐</string>
     <string name="meal_pre">前一天</string>
-    <string name="meal_next">下一天</string>
+    <string name="meal_next">后一天</string>
     <string name="meal_launch">午餐</string>
     <string name="meal_dinner">晚餐</string>
     <string name="meal_nightsnake">宵夜</string>
@@ -19,4 +19,5 @@
     <string name="meal_defaultcost">￥2</string>
     <string name="meal_defaultcount">0</string>
     <string name="meal_default_total_cost">总价￥10</string>
+    <string name="meal_default_date">2016年5月1日(星期天)</string>
 </resources>

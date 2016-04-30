@@ -21,7 +21,6 @@ import net.BusinessManager;
 import net.BusinessRequest;
 import net.IBusinessDeleage;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -29,6 +28,7 @@ import bean.Meal;
 import bean.ParseManager;
 import cz.msebera.android.httpclient.Header;
 import logic.MealRequest;
+import util.Util;
 
 /**
  * Created by gavinding on 16/4/4.
@@ -37,9 +37,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final String LOG_TAG = "MainActivity";
 //    HttpUtil httpUtil;
-    Button BtnPreDate, BtnNextDate;
+    Button btnPreDate, btnNextDate;
+    TextView textDate;
 //    WebView mWebView;
 //    TextView mTextView;
+    Calendar cal = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,19 +49,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 //        mWebView = (WebView) findViewById(R.id.webview);
 //        mWebView.loadUrl("http://kolvin.cn");
-        BtnPreDate = (Button) findViewById(R.id.pre);
-        BtnNextDate = (Button) findViewById(R.id.next);
+        btnPreDate = (Button) findViewById(R.id.pre);
+        btnNextDate = (Button) findViewById(R.id.next);
 //        mTextView = (TextView) findViewById(R.id.content);
 //
-        BtnPreDate.setOnClickListener(this);
-        BtnNextDate.setOnClickListener(this);
+        btnPreDate.setOnClickListener(this);
+        btnNextDate.setOnClickListener(this);
+
+        textDate = (TextView) findViewById(R.id.textView_date);
+
 //        mWebView = (WebView) findViewById(R.id.webview);
 //        httpUtil = new HttpUtil();
 //        httpUtil.setCookie(PreferenceUtil.getCookie(getApplication()));
 
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String strDate = sdf.format(c.getTime());
+        BusinessManager.getInstance(this).requestMeal(Util.getDateString(cal), this);
+        textDate.setText(Util.getDateWeekString(cal));
 
         //http://kolvin.cn/Meal/GetMealByDateAndType?date=2016-04-11&type=2&_=1460045964215
         //http://kolvin.cn/Meal/GetMyMeal?date=2016-04-07&type=1
@@ -75,9 +79,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                return true;
 //            }
 //        });
-
-
-        BusinessManager.getInstance(this).requestMeal(strDate, this);
     }
 
     private Handler handler = new Handler() {
@@ -141,10 +142,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId())
         {
             case R.id.pre:
-                BusinessManager.getInstance(this).requestMeal("2016-04-12", this);
+                cal.add(Calendar.DAY_OF_YEAR, -1);
+                BusinessManager.getInstance(this).requestMeal(Util.getDateString(cal), this);
+                textDate.setText(Util.getDateWeekString(cal));
                 break;
             case R.id.next:
-                BusinessManager.getInstance(this).requestMeal("2016-04-13", this);
+                cal.add(Calendar.DAY_OF_YEAR, 1);
+                BusinessManager.getInstance(this).requestMeal(Util.getDateString(cal), this);
+                textDate.setText(Util.getDateWeekString(cal));
                 break;
         }
     }
@@ -186,10 +191,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Toast.makeText(getBaseContext(), "" + view.getId(), Toast.LENGTH_SHORT).show();
 //                Meal clickedMeal = mealList.get(position);
 //                clickedMeal.setOrderCount(clickedMeal.getOrderCount() + 1);
 //
-//                TextView countText = (TextView) view.findViewById(R.id.textView_count);
+//                TextView countText = (TextView) view.findViewById(R.id.itemView_count);
 //                countText.setText(clickedMeal.getOrderCount());
 //
 //                Toast.makeText(getBaseContext(), clickedMeal.getOrderCount(), Toast.LENGTH_SHORT).show();
