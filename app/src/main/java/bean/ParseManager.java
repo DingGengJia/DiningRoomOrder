@@ -25,7 +25,7 @@ public class ParseManager {
         return parseManager;
     }
 
-    public void parseMealDayList(String date, String type, String jsonData) {
+    public void parseMealDayList(String date, int type, String jsonData) {
         String key = String.format(PARAM_MEAL_KEY, date, type);
         MealList mealList = new MealList(date, type, jsonData);
         mAllDateMeal.put(key, mealList);
@@ -35,7 +35,7 @@ public class ParseManager {
         List<MealList> mealLists = new ArrayList<>();
         for (int i : MealList.getMealType())
         {
-            MealList mealList = getMealByDate(date, Integer.toString(i));
+            MealList mealList = getMealByDate(date, i);
             if (mealList != null)
             {
                 mealLists.add(mealList);
@@ -45,7 +45,7 @@ public class ParseManager {
     }
 
 
-    public MealList getMealByDate(String date, String type) {
+    public MealList getMealByDate(String date, int type) {
         String paramKey = String.format(PARAM_MEAL_KEY, date, type);
 
         Iterator iter = mAllDateMeal.entrySet().iterator();
@@ -70,11 +70,39 @@ public class ParseManager {
             for (Meal meal : list.getMealList())
             {
                 if(Integer.valueOf(meal.getOrderCount()) > 0) {
-                    sum += Integer.valueOf(meal.getOrderCount()) * Integer.valueOf(meal.getOriPrice());
+                    sum += meal.getOrderCount() * meal.getOriPrice();
                 }
             }
         }
 
         return Integer.toString(sum);
+    }
+
+    public boolean isOrderCountChanged(String date) {
+        List<MealList> lists = getMealByDate(date);
+
+        for (MealList list : lists)
+        {
+            for (Meal meal : list.getMealList())
+            {
+                if(true == meal.isDataChanged())
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void clearDataChangeFlag(String date) {
+        List<MealList> lists = getMealByDate(date);
+
+        for (MealList list : lists)
+        {
+            for (Meal meal : list.getMealList())
+            {
+                meal.clearDataChangeFlag();
+            }
+        }
     }
 }

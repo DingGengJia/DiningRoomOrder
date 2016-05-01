@@ -1,11 +1,9 @@
 package com.gavin.diningroomorder;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.Intent;
-import android.graphics.Color;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -22,10 +20,8 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import net.BusinessManager;
 import net.BusinessRequest;
 import net.IBusinessDeleage;
 
@@ -33,6 +29,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import bean.Meal;
+import bean.MealList;
 import bean.ParseManager;
 import cz.msebera.android.httpclient.Header;
 import logic.MealRequest;
@@ -46,12 +43,9 @@ import widget.NumberPickerView;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IBusinessDeleage, NumberPickerView.INumberPickerView {
 
     private static final String LOG_TAG = "MainActivity";
-    //    HttpUtil httpUtil;
     Button btnPreDate, btnNextDate;
     TextView textDate, textTotalPrice;
-    //    WebView mWebView;
-//    TextView mTextView;
-     PopupWindow popupWindow;
+    PopupWindow popupWindow;
     Calendar cal = Calendar.getInstance();
 
     ArrayAdapter arrayAdapter;
@@ -61,13 +55,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        mWebView = (WebView) findViewById(R.id.webview);
-//        mWebView.loadUrl("http://kolvin.cn");
         btnPreDate = (Button) findViewById(R.id.pre);
         btnNextDate = (Button) findViewById(R.id.next);
         textTotalPrice = (TextView) findViewById(R.id.totalPrice);
-//        mTextView = (TextView) findViewById(R.id.content);
-//
+
         btnPreDate.setOnClickListener(this);
         btnNextDate.setOnClickListener(this);
 
@@ -77,16 +68,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         textDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(LOG_TAG, "textdate clicked");
+                Log.d(LOG_TAG, "select one day by DatePicker");
                 DatePickerDialog dateDlg = new DatePickerDialog(MainActivity.this,
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                cal.set(Calendar.YEAR, year);
-                                cal.set(Calendar.MONTH, monthOfYear);
-                                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                                BusinessManager.getInstance(MainActivity.this).requestMeal(Util.getDateString(cal), MainActivity.this);
-                                updateDate();
+                                Calendar tempCal = (Calendar) cal.clone();
+                                tempCal.set(Calendar.YEAR, year);
+                                tempCal.set(Calendar.MONTH, monthOfYear);
+                                tempCal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                                dealOnNewDay(tempCal);
                             }
                         },
                         cal.get(Calendar.YEAR),
@@ -96,56 +87,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-//        mWebView = (WebView) findViewById(R.id.webview);
-//        httpUtil = new HttpUtil();
-//        httpUtil.setCookie(PreferenceUtil.getCookie(getApplication()));
-
-        BusinessManager.getInstance(this).requestMeal(Util.getDateString(cal), this);
-        updateDate();
-
-        //http://kolvin.cn/Meal/GetMealByDateAndType?date=2016-04-11&type=2&_=1460045964215
-        //http://kolvin.cn/Meal/GetMyMeal?date=2016-04-07&type=1
-//        Log.d(LOG_TAG, "url = " + url);
-//        httpUtil.HttpPostURL(url, handler, "");
-//        mWebView.loadUrl(url);
-//        mWebView.setWebViewClient(new WebViewClient() {
-//            @Override
-//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//                // TODO Auto-generated method stub
-//                //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
-//                view.loadUrl(url);
-//                return true;
-//            }
-//        });
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        onNewDay(Calendar.getInstance());
     }
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            String m = (String) msg.obj;
-            Log.d(LOG_TAG, "url = " + m);
+    private void onNewDay(Calendar newDay) {
+        cal = newDay;
 
-            //mResult.setText(m);
-//            try {
-            // JSONObject object = new JSONObject(m);
-            // String statusCode = object.getString("statusCode");
+//        BusinessManager.getInstance(this).requestMeal(Util.getDateString(cal), this);
+        updateDate();
 
-            //if ("200".equals(statusCode)) {
-//                   // Toast.makeText(MainActivity.this, m, Toast.LENGTH_LONG).show();
-//            new AlertDialog.Builder(MainActivity.this)
-//                    .setTitle("确认")
-//                    .setMessage(m)
-//                    .setPositiveButton("是", null)
-//                    .setNegativeButton("否", null)
-//                    .show();                //}
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
+        // TODO temp, to delte
+        String jsonData = new String("[{\"MealID\":\"40645517-aeb2-4c15-ab12-0e6d33d6101d\",\"DishID\":\"867242a3-e941-42aa-bc0d-8d8a1455e9e8\",\"DishName\":\"标准早餐\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":1},{\"MealID\":\"4237e174-de34-4cfb-9a93-41c5ecc0f602\",\"DishID\":\"a942df11-28d9-42f2-88ab-17a08c93f4a6\",\"DishName\":\"银鹭花生牛奶\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":1},{\"MealID\":\"35b1a1f1-0e4d-4c83-b2a2-96b0f0ed4e5e\",\"DishID\":\"2320b69a-ee2b-4df0-8894-5e95493a4a9f\",\"DishName\":\"茶叶蛋\",\"OriPrice\":2,\"DishPrice\":2,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0},{\"MealID\":\"ebee260d-f5c1-4803-9a1e-c38e78030833\",\"DishID\":\"2660172f-c970-4666-b83c-86069ac19bf3\",\"DishName\":\"优酸乳\",\"OriPrice\":2,\"DishPrice\":2,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0},{\"MealID\":\"9c7953f7-31b8-4e11-b48e-ea027ae3384b\",\"DishID\":\"67eac511-27af-4e8d-96ff-2ca3d453254c\",\"DishName\":\"晨光甜牛奶\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0}]");
+        for (int i : MealList.getMealType()) {
+            displayMealData(Util.getDateString(cal), i, jsonData);
         }
-    };
+        Log.d(LOG_TAG, "onNewDay " + cal.getTime());
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -169,48 +126,79 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
-
-    private View.OnClickListener mSendClickListener = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View v) {
-
-        }
-    };
-
     @Override
     public void onClick(View v) {
+        int day = 0;
         switch (v.getId()) {
             case R.id.pre:
-                cal.add(Calendar.DAY_OF_YEAR, -1);
-                BusinessManager.getInstance(this).requestMeal(Util.getDateString(cal), this);
-                updateDate();
+                day = -1;
+                nextDay(day);
                 break;
             case R.id.next:
-                cal.add(Calendar.DAY_OF_YEAR, 1);
-                BusinessManager.getInstance(this).requestMeal(Util.getDateString(cal), this);
-                updateDate();
+                day = 1;
+                nextDay(day);
                 break;
         }
+    }
+
+    private void nextDay(int day) {
+        Calendar tempCal = (Calendar) cal.clone();
+        tempCal.add(Calendar.DAY_OF_YEAR, day);
+        dealOnNewDay(tempCal);
+    }
+
+    private void dealOnNewDay(Calendar newDay) {
+        if (true == ParseManager.getInstance().isOrderCountChanged(Util.getDateString(cal))) {
+            Log.d(LOG_TAG, "go to next day with data changed");
+            showCheckDialog(newDay);
+        } else {
+            Log.d(LOG_TAG, "go to next day with no data changed");
+            onNewDay(newDay);
+        }
+    }
+
+    private void showCheckDialog(final Calendar newDay) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage("订餐数据有变更，需要提交吗？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d(LOG_TAG, "confrim data change");
+                dialog.dismiss();
+                // TODO commit change
+                onNewDay(newDay);
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d(LOG_TAG, "cancel data change");
+                dialog.dismiss();
+                ParseManager.getInstance().clearDataChangeFlag(Util.getDateString(cal));
+                onNewDay(newDay);
+            }
+        });
+        builder.create().show();
     }
 
     private void updateDate() {
         textDate.setText(Util.getDateWeekString(cal));
     }
 
-    private int getViewIdByMealType(String type) {
+    private int getViewIdByMealType(int type) {
         int id = 0;
         switch (type) {
-            case "1":
+            case 1:
                 id = R.id.listView1;
                 break;
-            case "2":
+            case 2:
                 id = R.id.listView2;
                 break;
-            case "3":
+            case 3:
                 id = R.id.listView3;
                 break;
-            case "4":
+            case 4:
                 id = R.id.listView4;
                 break;
             default:
@@ -225,35 +213,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         MealRequest mealRequest = (MealRequest) request;
         String jsonData = new String(response);
-        ParseManager.getInstance().parseMealDayList(mealRequest.getDate(), mealRequest.getType(), jsonData);
+        displayMealData(mealRequest.getDate(), mealRequest.getType(), jsonData);
+    }
 
-       final ArrayAdapter<Meal> adapter = new MealAdapter(mealRequest.getDate(), mealRequest.getType());
-        InnerListView list = (InnerListView) findViewById(getViewIdByMealType(mealRequest.getType()));
+    private void displayMealData(String date, int type, String jsonData) {
+        ParseManager.getInstance().parseMealDayList(date, type, jsonData);
+
+        final ArrayAdapter<Meal> adapter = new MealAdapter(date, type);
+        InnerListView list = (InnerListView) findViewById(getViewIdByMealType(type));
 
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 Meal meal = adapter.getItem(position);
-                Toast.makeText(getBaseContext(), "meal type=" + meal.getType() + "on item click " + view.getId() + " parent " + parent.getId(), Toast.LENGTH_SHORT).show();
-//                Meal clickedMeal = mealList.get(position);
-//                clickedMeal.setOrderCount(clickedMeal.getOrderCount() + 1);
-//
-//                TextView countText = (TextView) view.findViewById(R.id.itemView_count);
-//                countText.setText(clickedMeal.getOrderCount());
-//
-//                Toast.makeText(getBaseContext(), clickedMeal.getOrderCount(), Toast.LENGTH_SHORT).show();
-
-//                Intent intent = new Intent(MainActivity.this, NumberPickerActivity.class);
-//                intent.putExtra("currentValue", 1);
-//                startActivityForResult(intent, 1000);
                 arrayAdapter = adapter;
                 showPopupWindow(view, meal);
             }
         });
 
-        updateTotalPrice(mealRequest.getDate());
+        updateTotalPrice(date);
     }
 
     private void updateTotalPrice(String date) {
@@ -261,25 +240,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1000 && resultCode == 1000) {
-            Log.d(LOG_TAG, "get result from numberpicker " + data.getStringExtra("result"));
-        }
-    }
-
-    @Override
-    public void onProcessFailed() {
+    public void onProcessFailed(BusinessRequest request) {
         Toast.makeText(MainActivity.this, "请求超时，请检查网络连接", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void submit(Meal meal) {
-        Toast.makeText(MainActivity.this, "submit", Toast.LENGTH_SHORT).show();
         cancle();
-        if(arrayAdapter!=null)
-        {
+        if (arrayAdapter != null) {
             arrayAdapter.notifyDataSetChanged();
             updateTotalPrice(meal.getDate());
         }
@@ -287,16 +255,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void cancle() {
-        if(popupWindow!=null)
-        popupWindow.dismiss();
+        if (popupWindow != null)
+            popupWindow.dismiss();
     }
 
     private class MealAdapter extends ArrayAdapter<Meal> {
         private String date = null;
-        private String type = null;
+        private int type = 0;
         List<Meal> mealList = null;
 
-        public MealAdapter(String date, String type) {
+        public MealAdapter(String date, int type) {
             super(MainActivity.this, R.layout.item_view, (List<Meal>) ParseManager.getInstance().getMealByDate(date, type).getMealList());
             this.date = date;
             this.type = type;
@@ -320,37 +288,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 costText.setText(String.format("￥%s", currentMeal.getDishPrice()));
 
                 TextView countText = (TextView) itemView.findViewById(R.id.itemView_count);
-                countText.setText(currentMeal.getOrderCount());
+                countText.setText(Integer.toString(currentMeal.getOrderCount()));
             }
 
-            itemView.setBackgroundColor(getColorByMealType(this.type));
             return itemView;
         }
 
     }
-
-    private int getColorByMealType(String type) {
-        int color = 0;
-        switch (type) {
-            case "1":
-                color = Color.BLUE;
-                break;
-            case "2":
-                color = Color.RED;
-                break;
-            case "3":
-                color = Color.GREEN;
-                break;
-            case "4":
-                color = Color.YELLOW;
-                break;
-            default:
-                Log.e(LOG_TAG, "meal type(" + type + ") error");
-        }
-
-        return color;
-    }
-
 
     private void showPopupWindow(View view, Meal meal) {
         NumberPickerView contentView = (NumberPickerView) LayoutInflater.from(this).inflate(
@@ -365,6 +309,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         popupWindow.setBackgroundDrawable(getResources().getDrawable(R.color.color_55555));
         // 设置好参数之后再show
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
     }
 }

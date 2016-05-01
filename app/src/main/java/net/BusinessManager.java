@@ -47,7 +47,7 @@ public class BusinessManager implements IBusinessManager {
     public void requestMeal(String date, IBusinessDeleage delegate) {
         for (int i : MealList.getMealType())
         {
-            MealRequest request = new MealRequest(date, Integer.toString(i));
+            MealRequest request = new MealRequest(date, i);
             sendPostRequest(request, delegate);
         }
     }

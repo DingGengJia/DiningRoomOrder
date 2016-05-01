@@ -9,9 +9,9 @@ public class MealRequest extends BusinessRequest {
     private String urlHead = "http://kolvin.cn/UserMeal/GetMyMeal";
 
     private String date;
-    private String type;
+    private int type;
 
-    public MealRequest(String date, String type) {
+    public MealRequest(String date, int type) {
         setDate(date);
         setType(type);
         String url = urlHead + "?date=" + date + "&type=" + type;
@@ -26,11 +26,11 @@ public class MealRequest extends BusinessRequest {
         this.date = date;
     }
 
-    public String getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(int type) {
         this.type = type;
     }
 }

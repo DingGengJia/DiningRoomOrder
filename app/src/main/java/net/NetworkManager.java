@@ -76,7 +76,7 @@ public class NetworkManager implements AsyncHttpClientInterface {
     @Override
     public ResponseHandlerInterface getResponseHandler(final BusinessRequest request, final IBusinessDeleage deleage) {
         if (request instanceof MealRequest) {
-            String type = ((MealRequest) request).getType();
+            int type = ((MealRequest) request).getType();
             Log.d("response==", "type =" + type);
 
         }
@@ -103,7 +103,7 @@ public class NetworkManager implements AsyncHttpClientInterface {
                 Log.d(LOG_TAG, "response"+ new String(response));
 
                 if (mRequest instanceof MealRequest) {
-                    String type = ((MealRequest) mRequest).getType();
+                    int type = ((MealRequest) mRequest).getType();
                     Log.d(LOG_TAG, "response type =" + type);
                 }
 
@@ -119,7 +119,7 @@ public class NetworkManager implements AsyncHttpClientInterface {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
                 Log.d(LOG_TAG, "========onFailure ");
-                mDeleage.onProcessFailed();
+                mDeleage.onProcessFailed(mRequest);
             }
         };
     }

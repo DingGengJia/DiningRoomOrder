@@ -10,6 +10,6 @@ public interface IBusinessDeleage {
     public void onProcessSuccess(BusinessRequest request, int statusCode, Header[] headers, byte[] response, IBusinessDeleage deleage);
 
 
-    public void onProcessFailed();
+    public void onProcessFailed(BusinessRequest request);
 
 }

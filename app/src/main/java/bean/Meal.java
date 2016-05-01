@@ -1,5 +1,7 @@
 package bean;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -8,17 +10,19 @@ import org.json.JSONObject;
  */
 public class Meal {
 
+    private static final String LOG_TAG = "Meal";
     private String MealID = "0";
-    private String DishID = "0";          // ID
-    private String DishName = "0";        // 菜名
-    private String OriPrice = "0";        // 价格
-    private String DishPrice = "0";
-    private String DishLimitCount = "0";  // 限制份数
-    private String ResidueCount = "0";    // 剩余份数
-    private String OrderCount = "0";
+    private String DishID = "0";        // ID
+    private String DishName = "0";      // 菜名
+    private double OriPrice = 0;        // 价格
+    private double DishPrice = 0;
+    private int DishLimitCount = 0;     // 限制份数
+    private int ResidueCount = 0;       // 剩余份数
+    private int OrderCount = 0;
 
-    private String Type = "";
+    private int Type = 0;
     private String Date = "";
+    private boolean isChanged = false;
 
 
     public Meal(JSONObject jsonData) {
@@ -26,11 +30,11 @@ public class Meal {
             MealID = jsonData.getString("MealID");
             DishID = jsonData.getString("DishID");
             DishName = jsonData.getString("DishName");
-            OriPrice = jsonData.getString("OriPrice");
-            DishPrice = jsonData.getString("DishPrice");
-            DishLimitCount = jsonData.getString("DishLimitCount");
-            ResidueCount = jsonData.getString("ResidueCount");
-            OrderCount = jsonData.getString("OrderCount");
+            OriPrice = jsonData.getDouble("OriPrice");
+            DishPrice = jsonData.getDouble("DishPrice");
+            DishLimitCount = jsonData.getInt("DishLimitCount");
+            ResidueCount = jsonData.getInt("ResidueCount");
+            OrderCount = jsonData.getInt("OrderCount");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -60,52 +64,54 @@ public class Meal {
         DishName = dishName;
     }
 
-    public String getOriPrice() {
+    public double getOriPrice() {
         return OriPrice;
     }
 
-    public void setOriPrice(String oriPrice) {
+    public void setOriPrice(double oriPrice) {
         OriPrice = oriPrice;
     }
 
-    public String getDishPrice() {
+    public double getDishPrice() {
         return DishPrice;
     }
 
-    public void setDishPrice(String dishPrice) {
+    public void setDishPrice(double dishPrice) {
         DishPrice = dishPrice;
     }
 
-    public String getDishLimitCount() {
+    public int getDishLimitCount() {
         return DishLimitCount;
     }
 
-    public void setDishLimitCount(String dishLimitCount) {
+    public void setDishLimitCount(int dishLimitCount) {
         DishLimitCount = dishLimitCount;
     }
 
-    public String getResidueCount() {
+    public int getResidueCount() {
         return ResidueCount;
     }
 
-    public void setResidueCount(String residueCount) {
+    public void setResidueCount(int residueCount) {
         ResidueCount = residueCount;
     }
 
-    public String getOrderCount() {
+    public int getOrderCount() {
         return OrderCount;
     }
 
-    public void setOrderCount(String orderCount) {
+    public void setOrderCount(int orderCount) {
+        Log.d(LOG_TAG, "data changed");
         OrderCount = orderCount;
+        isChanged = true;
     }
 
-    public String getType() {
+    public int getType() {
         return Type;
     }
 
-    public void setType(String type) {
-        Type = type;
+    public void setType(int type) {
+        this.Type = type;
     }
 
     public String getDate() {
@@ -114,5 +120,13 @@ public class Meal {
 
     public void setDate(String date) {
         Date = date;
+    }
+
+    public void clearDataChangeFlag() {
+        isChanged = false;
+    }
+
+    public boolean isDataChanged() {
+        return isChanged;
     }
 }

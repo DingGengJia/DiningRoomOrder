@@ -16,11 +16,11 @@ public class MealList {
     public final static int[] mealType = {1, 2, 3, 4}; //早，中，晚，宵夜
 
     private String Date;
-    private String Type;
+    private int Type;
 
     private List<Meal> mMealList = new ArrayList<Meal>();
 
-    public MealList(String date, String type, String jsonString) {
+    public MealList(String date, int type, String jsonString) {
         if (jsonString == null) return;
         try {
             setDate(date);
@@ -47,11 +47,11 @@ public class MealList {
         this.Date = date;
     }
 
-    public String getType() {
+    public int getType() {
         return Type;
     }
 
-    public void setType(String type) {
+    public void setType(int type) {
         this.Type = type;
     }
 

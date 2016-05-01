@@ -6,17 +6,19 @@
     android:orientation="vertical">
 
     <TextView
+        style="?android:attr/buttonBarButtonStyle"
         android:id="@+id/number_picker_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/select_meal_count_text"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:textAlignment="center" />
 
     <NumberPicker
         android:id="@+id/number_picker"
         android:layout_width="wrap_content"
         android:layout_gravity="center"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
     </NumberPicker>
 
@@ -26,17 +28,21 @@
         android:layout_height="wrap_content">
 
         <Button
+            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/number_picker_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/number_picker_cancel_text"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textAlignment="center" />
 
         <Button
+            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/number_picker_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/number_picker_confrim_text"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textAlignment="center" />
 
     </LinearLayout>

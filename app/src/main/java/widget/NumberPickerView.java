@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
-import android.widget.Toast;
 
 import com.gavin.diningroomorder.R;
 
@@ -56,7 +55,7 @@ public class NumberPickerView extends LinearLayout implements View.OnClickListen
 
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                Toast.makeText(getContext(), "number picker value change", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "number picker value change", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -73,16 +72,26 @@ public class NumberPickerView extends LinearLayout implements View.OnClickListen
         Log.d(LOG_TAG, "number picker on click");
         switch (v.getId()) {
             case R.id.number_picker_cancel:
+                Log.d(LOG_TAG, "cancel number pick");
                 if(delegate!=null)
                 {
                     delegate.cancle();
                 }
                 break;
             case R.id.number_picker_confirm:
+                Log.d(LOG_TAG, "confirm number pick");
                 if(delegate!=null)
                 {
-                    delegate.submit(meal);
-                    meal.setOrderCount(Integer.toString(numberPicker.getValue()));
+                    if(meal.getOrderCount() != numberPicker.getValue()) {
+                        Log.d(LOG_TAG, "data changed");
+                        delegate.submit(meal);
+                        meal.setOrderCount(numberPicker.getValue());
+                    }
+                    else
+                    {
+                        Log.d(LOG_TAG, "data no change");
+                        delegate.cancle();
+                    }
                 }
                 break;
         }
