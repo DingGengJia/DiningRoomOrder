@@ -10,8 +10,6 @@ import android.widget.NumberPicker;
 
 import com.gavin.diningroomorder.R;
 
-import bean.Meal;
-
 /**
  * Created by gavin on 1/5/16.
  */
@@ -19,7 +17,7 @@ public class NumberPickerView extends LinearLayout implements View.OnClickListen
     private static final String LOG_TAG = "NumberPicker";
     NumberPicker numberPicker = null;
     INumberPickerView delegate;
-    Meal meal;
+    int lastCount = 0;
 
     public NumberPickerView(Context context) {
         super(context);
@@ -35,7 +33,7 @@ public class NumberPickerView extends LinearLayout implements View.OnClickListen
 
     public interface INumberPickerView {
 
-        public void submit(Meal meal);
+        public void submit(int count);
 
         public void cancle();
     }
@@ -82,10 +80,9 @@ public class NumberPickerView extends LinearLayout implements View.OnClickListen
                 Log.d(LOG_TAG, "confirm number pick");
                 if(delegate!=null)
                 {
-                    if(meal.getOrderCount() != numberPicker.getValue()) {
+                    if(lastCount != numberPicker.getValue()) {
                         Log.d(LOG_TAG, "data changed");
-                        delegate.submit(meal);
-                        meal.setOrderCount(numberPicker.getValue());
+                        delegate.submit(numberPicker.getValue());
                     }
                     else
                     {
@@ -97,13 +94,8 @@ public class NumberPickerView extends LinearLayout implements View.OnClickListen
         }
     }
 
-    public Meal getMeal() {
-        return meal;
+    public void setLastCount(int count){
+        lastCount = count;
+        numberPicker.setValue(count);
     }
-
-    public void setMeal(Meal meal) {
-        this.meal = meal;
-        numberPicker.setValue(Integer.valueOf(this.meal.getOrderCount()));
-    }
-
 }

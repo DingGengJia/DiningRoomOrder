@@ -20,8 +20,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import net.BusinessRequest;
 import net.IBusinessDeleage;
 
@@ -49,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Calendar cal = Calendar.getInstance();
 
     ArrayAdapter arrayAdapter;
-    private GoogleApiClient client;
+    Meal numberPickerMeal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -228,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Meal meal = adapter.getItem(position);
                 arrayAdapter = adapter;
+                numberPickerMeal = meal;
                 showPopupWindow(view, meal);
             }
         });
@@ -236,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void updateTotalPrice(String date) {
+        Log.d(LOG_TAG, "update total price");
         textTotalPrice.setText(String.format("总价￥%s", ParseManager.getInstance().getTotalPriceByDate(date)));
     }
 
@@ -245,11 +245,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void submit(Meal meal) {
+    public void submit(int count) {
         cancle();
-        if (arrayAdapter != null) {
+        if (arrayAdapter != null && numberPickerMeal != null) {
             arrayAdapter.notifyDataSetChanged();
-            updateTotalPrice(meal.getDate());
+            numberPickerMeal.setOrderCount(count);
+            updateTotalPrice(numberPickerMeal.getDate());
         }
     }
 
@@ -300,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         NumberPickerView contentView = (NumberPickerView) LayoutInflater.from(this).inflate(
                 R.layout.view_number_picker, null);
         contentView.setDelegate(this);
-        contentView.setMeal(meal);
+        contentView.setLastCount(meal.getOrderCount());
         popupWindow = new PopupWindow(contentView,
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         popupWindow.setTouchable(true);
