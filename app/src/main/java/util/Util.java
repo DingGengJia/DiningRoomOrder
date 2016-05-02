@@ -33,7 +33,8 @@ public class Util {
 
 
     public static String getDateTimeString(Calendar cal) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        // 这里时间必须填0:00:00，坑爹啊！怎么设计的
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd 0:00:00");
         String strDate = sdf.format(cal.getTime());
         return sdf.format(cal.getTime());
     }
