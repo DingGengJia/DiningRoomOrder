@@ -10,8 +10,8 @@
     <string name="meal_count">份数</string>
     <string name="meal_type">时段</string>
     <string name="meal_breakfast">早餐</string>
-    <string name="meal_pre">前一天</string>
-    <string name="meal_next">后一天</string>
+    <string name="meal_pre">上一日</string>
+    <string name="meal_next">下一日</string>
     <string name="meal_launch">午餐</string>
     <string name="meal_dinner">晚餐</string>
     <string name="meal_nightsnake">宵夜</string>
