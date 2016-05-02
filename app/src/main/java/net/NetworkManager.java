@@ -36,8 +36,8 @@ public class NetworkManager implements AsyncHttpClientInterface {
     public void sendGetRequst(BusinessRequest request, HttpEntity entity, IBusinessDeleage deleage) {
         Log.d(LOG_TAG, "url=" + request.getUrl());
 
-        PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
-        client.setCookieStore(myCookieStore);
+//        PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
+//        client.setCookieStore(myCookieStore);
 
         addRequestHandle(executeGet(client,
                 request,
@@ -48,9 +48,9 @@ public class NetworkManager implements AsyncHttpClientInterface {
 
     public void sendPostRequst(BusinessRequest request, Header[] headers, HttpEntity entity, IBusinessDeleage deleage) {
         Log.d(LOG_TAG, "url=" + request.getUrl());
-
-        PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
-        client.setCookieStore(myCookieStore);
+//
+//        PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
+//        client.setCookieStore(myCookieStore);
 
         addRequestHandle(executePost(client,
                 request,
@@ -62,8 +62,8 @@ public class NetworkManager implements AsyncHttpClientInterface {
     public void sendPostRequst(BusinessRequest request, RequestParams params, IBusinessDeleage deleage) {
         Log.d(LOG_TAG, "url=" + request.getUrl());
 
-        PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
-        client.setCookieStore(myCookieStore);
+//        PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
+//        client.setCookieStore(myCookieStore);
 
         addRequestHandle(executePost(client,
                 request,
@@ -162,7 +162,7 @@ public class NetworkManager implements AsyncHttpClientInterface {
 
     public RequestHandle executePost(AsyncHttpClient client, BusinessRequest request, Header[] headers, HttpEntity entity, ResponseHandlerInterface responseHandler) {
         String URL = request.getUrl();
-        return client.post(mContext, URL, headers, entity, "application/json", responseHandler);
+        return client.post(mContext, URL, headers, entity, null, responseHandler);
     }
 
     public RequestHandle executePost(AsyncHttpClient client, BusinessRequest request, RequestParams params, ResponseHandlerInterface responseHandler) {

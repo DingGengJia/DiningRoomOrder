@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.d(LOG_TAG, "confrim data change");
+                Log.d(LOG_TAG, "confrim data change of date " + Util.getDateTimeString(cal));
                 dialog.dismiss();
                 String selString = ParseManager.getInstance().getMealString(dateString);
                 BusinessManager.getInstance(MainActivity.this).requestSaveUserMeal(Util.getDateTimeString(cal), selString, MainActivity.this);

@@ -16,12 +16,6 @@ public class SaveUserMealRequest extends BusinessRequest {
         setDate(date);
         setSel(sel);
         String url = urlHead;
-//        String url = null;
-//        try {
-//            url = urlHead + "?sel=" + URLEncoder.encode(sel, "UTF-8")  + "&date=" + URLEncoder.encode(date, "UTF-8");
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
         setUrl(url);
     }
 
