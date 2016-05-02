@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -20,6 +21,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.BusinessManager;
 import net.BusinessRequest;
 import net.IBusinessDeleage;
 
@@ -27,7 +29,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import bean.Meal;
-import bean.MealList;
 import bean.ParseManager;
 import cz.msebera.android.httpclient.Header;
 import logic.MealRequest;
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btnPreDate.setOnClickListener(this);
         btnNextDate.setOnClickListener(this);
+        textTotalPrice.setOnClickListener(this);
 
         textDate = (TextView) findViewById(R.id.textView_date);
         textDate.setClickable(true);
@@ -91,14 +93,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void onNewDay(Calendar newDay) {
         cal = newDay;
 
-//        BusinessManager.getInstance(this).requestMeal(Util.getDateString(cal), this);
+        BusinessManager.getInstance(this).requestMeal(Util.getDateString(cal), this);
         updateDate();
 
         // TODO temp, to delte
-        String jsonData = new String("[{\"MealID\":\"40645517-aeb2-4c15-ab12-0e6d33d6101d\",\"DishID\":\"867242a3-e941-42aa-bc0d-8d8a1455e9e8\",\"DishName\":\"标准早餐\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":1},{\"MealID\":\"4237e174-de34-4cfb-9a93-41c5ecc0f602\",\"DishID\":\"a942df11-28d9-42f2-88ab-17a08c93f4a6\",\"DishName\":\"银鹭花生牛奶\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":1},{\"MealID\":\"35b1a1f1-0e4d-4c83-b2a2-96b0f0ed4e5e\",\"DishID\":\"2320b69a-ee2b-4df0-8894-5e95493a4a9f\",\"DishName\":\"茶叶蛋\",\"OriPrice\":2,\"DishPrice\":2,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0},{\"MealID\":\"ebee260d-f5c1-4803-9a1e-c38e78030833\",\"DishID\":\"2660172f-c970-4666-b83c-86069ac19bf3\",\"DishName\":\"优酸乳\",\"OriPrice\":2,\"DishPrice\":2,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0},{\"MealID\":\"9c7953f7-31b8-4e11-b48e-ea027ae3384b\",\"DishID\":\"67eac511-27af-4e8d-96ff-2ca3d453254c\",\"DishName\":\"晨光甜牛奶\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0}]");
-        for (int i : MealList.getMealType()) {
-            displayMealData(Util.getDateString(cal), i, jsonData);
-        }
+//        String jsonData = new String("[{\"MealID\":\"40645517-aeb2-4c15-ab12-0e6d33d6101d\",\"DishID\":\"867242a3-e941-42aa-bc0d-8d8a1455e9e8\",\"DishName\":\"标准早餐\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":1},{\"MealID\":\"4237e174-de34-4cfb-9a93-41c5ecc0f602\",\"DishID\":\"a942df11-28d9-42f2-88ab-17a08c93f4a6\",\"DishName\":\"银鹭花生牛奶\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":1},{\"MealID\":\"35b1a1f1-0e4d-4c83-b2a2-96b0f0ed4e5e\",\"DishID\":\"2320b69a-ee2b-4df0-8894-5e95493a4a9f\",\"DishName\":\"茶叶蛋\",\"OriPrice\":2,\"DishPrice\":2,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0},{\"MealID\":\"ebee260d-f5c1-4803-9a1e-c38e78030833\",\"DishID\":\"2660172f-c970-4666-b83c-86069ac19bf3\",\"DishName\":\"优酸乳\",\"OriPrice\":2,\"DishPrice\":2,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0},{\"MealID\":\"9c7953f7-31b8-4e11-b48e-ea027ae3384b\",\"DishID\":\"67eac511-27af-4e8d-96ff-2ca3d453254c\",\"DishName\":\"晨光甜牛奶\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0}]");
+//        for (int i : MealList.getMealType()) {
+//            displayMealData(Util.getDateString(cal), i, jsonData);
+//        }
         Log.d(LOG_TAG, "onNewDay " + cal.getTime());
     }
 
@@ -136,6 +138,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 day = 1;
                 nextDay(day);
                 break;
+            case R.id.totalPrice:
+                checkSaveData();
+                break;
         }
     }
 
@@ -146,16 +151,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void dealOnNewDay(Calendar newDay) {
+        checkSaveData();
+        onNewDay(newDay);
+    }
+
+    private void checkSaveData() {
         if (true == ParseManager.getInstance().isOrderCountChanged(Util.getDateString(cal))) {
             Log.d(LOG_TAG, "go to next day with data changed");
-            showCheckDialog(newDay);
+            showCheckDialog();
         } else {
             Log.d(LOG_TAG, "go to next day with no data changed");
-            onNewDay(newDay);
         }
     }
 
-    private void showCheckDialog(final Calendar newDay) {
+    private void showCheckDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setMessage("订餐数据有变更，需要提交吗？");
         builder.setTitle("提示");
@@ -165,7 +174,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(LOG_TAG, "confrim data change");
                 dialog.dismiss();
                 // TODO commit change
-                onNewDay(newDay);
+                ParseManager.getInstance().clearDataChangeFlag(Util.getDateString(cal));
+                updateTotalPrice();
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -173,8 +183,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(DialogInterface dialog, int which) {
                 Log.d(LOG_TAG, "cancel data change");
                 dialog.dismiss();
-                ParseManager.getInstance().clearDataChangeFlag(Util.getDateString(cal));
-                onNewDay(newDay);
             }
         });
         builder.create().show();
@@ -231,12 +239,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        updateTotalPrice(date);
+        updateTotalPrice();
     }
 
-    private void updateTotalPrice(String date) {
+    private void updateTotalPrice() {
         Log.d(LOG_TAG, "update total price");
-        textTotalPrice.setText(String.format("总价￥%s", ParseManager.getInstance().getTotalPriceByDate(date)));
+        textTotalPrice.setText(String.format("总价￥%s", ParseManager.getInstance().getTotalPriceByDate(Util.getDateString(cal))));
+        if(true == ParseManager.getInstance().isOrderCountChanged(Util.getDateString(cal)))
+        {
+            textTotalPrice.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.colorTotalPriceChanged));
+        }
+        else
+        {
+            textTotalPrice.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.colorTotalPriceNormal));
+        }
     }
 
     @Override
@@ -250,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (arrayAdapter != null && numberPickerMeal != null) {
             arrayAdapter.notifyDataSetChanged();
             numberPickerMeal.setOrderCount(count);
-            updateTotalPrice(numberPickerMeal.getDate());
+            updateTotalPrice();
         }
     }
 
@@ -307,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         popupWindow.setTouchable(true);
         // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
         // 我觉得这里是API的一个bug
-        popupWindow.setBackgroundDrawable(getResources().getDrawable(R.color.color_55555));
+        popupWindow.setBackgroundDrawable(getResources().getDrawable(R.color.colorNumberPickerBackground));
         // 设置好参数之后再show
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
     }

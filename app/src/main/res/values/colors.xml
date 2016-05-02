@@ -3,6 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="color_55555">#555555</color>
-
+    <color name="colorNumberPickerBackground">#e2e2e2</color>
+    <color name="colorTotalPriceChanged">#f10c58</color>
+    <color name="colorTotalPriceNormal">#555555</color>
 </resources>

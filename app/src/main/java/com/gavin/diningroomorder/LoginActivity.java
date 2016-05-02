@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import net.BusinessManager;
 import net.BusinessRequest;
 import net.IBusinessDeleage;
 
@@ -43,11 +44,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.login:
                 String userName = mUserName.getText().toString();
                 String psd = mPassWord.getText().toString();
-//                BusinessManager.getInstance(this).requestLogin(userName, psd, this);
+                BusinessManager.getInstance(this).requestLogin(userName, psd, this);
 
                 // TODO temp to del
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                startActivity(intent);
                 break;
         }
     }

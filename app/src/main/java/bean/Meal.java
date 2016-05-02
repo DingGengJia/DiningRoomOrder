@@ -19,6 +19,7 @@ public class Meal {
     private int DishLimitCount = 0;     // 限制份数
     private int ResidueCount = 0;       // 剩余份数
     private int OrderCount = 0;
+    private int SourceOrderCount = 0;
 
     private int Type = 0;
     private String Date = "";
@@ -35,6 +36,7 @@ public class Meal {
             DishLimitCount = jsonData.getInt("DishLimitCount");
             ResidueCount = jsonData.getInt("ResidueCount");
             OrderCount = jsonData.getInt("OrderCount");
+            SourceOrderCount = OrderCount;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -103,7 +105,13 @@ public class Meal {
     public void setOrderCount(int orderCount) {
         Log.d(LOG_TAG, "data changed");
         OrderCount = orderCount;
-        isChanged = true;
+        if(SourceOrderCount == OrderCount)
+        {
+            isChanged = false;
+        }
+        else {
+            isChanged = true;
+        }
     }
 
     public int getType() {
