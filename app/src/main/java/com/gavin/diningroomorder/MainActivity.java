@@ -9,8 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -49,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     ArrayAdapter arrayAdapter;
     Meal numberPickerMeal;
+    private String dateString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,39 +90,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void onNewDay(Calendar newDay) {
-        cal = newDay;
+        updateDate(newDay);
 
-        BusinessManager.getInstance(this).requestMeal(Util.getDateString(cal), this);
-        updateDate();
+        BusinessManager.getInstance(this).requestMeal(dateString, this);
 
         // TODO temp, to delte
 //        String jsonData = new String("[{\"MealID\":\"40645517-aeb2-4c15-ab12-0e6d33d6101d\",\"DishID\":\"867242a3-e941-42aa-bc0d-8d8a1455e9e8\",\"DishName\":\"标准早餐\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":1},{\"MealID\":\"4237e174-de34-4cfb-9a93-41c5ecc0f602\",\"DishID\":\"a942df11-28d9-42f2-88ab-17a08c93f4a6\",\"DishName\":\"银鹭花生牛奶\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":1},{\"MealID\":\"35b1a1f1-0e4d-4c83-b2a2-96b0f0ed4e5e\",\"DishID\":\"2320b69a-ee2b-4df0-8894-5e95493a4a9f\",\"DishName\":\"茶叶蛋\",\"OriPrice\":2,\"DishPrice\":2,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0},{\"MealID\":\"ebee260d-f5c1-4803-9a1e-c38e78030833\",\"DishID\":\"2660172f-c970-4666-b83c-86069ac19bf3\",\"DishName\":\"优酸乳\",\"OriPrice\":2,\"DishPrice\":2,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0},{\"MealID\":\"9c7953f7-31b8-4e11-b48e-ea027ae3384b\",\"DishID\":\"67eac511-27af-4e8d-96ff-2ca3d453254c\",\"DishName\":\"晨光甜牛奶\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0}]");
 //        for (int i : MealList.getMealType()) {
-//            displayMealData(Util.getDateString(cal), i, jsonData);
+//            displayMealData(dateString, i, jsonData);
 //        }
         Log.d(LOG_TAG, "onNewDay " + cal.getTime());
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -156,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void checkSaveData() {
-        if (true == ParseManager.getInstance().isOrderCountChanged(Util.getDateString(cal))) {
+        if (true == ParseManager.getInstance().isOrderCountChanged(dateString)) {
             Log.d(LOG_TAG, "go to next day with data changed");
             showCheckDialog();
         } else {
@@ -174,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(LOG_TAG, "confrim data change");
                 dialog.dismiss();
                 // TODO commit change
-                ParseManager.getInstance().clearDataChangeFlag(Util.getDateString(cal));
+                ParseManager.getInstance().clearDataChangeFlag(dateString);
                 updateTotalPrice();
             }
         });
@@ -188,7 +164,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.create().show();
     }
 
-    private void updateDate() {
+    private void updateDate(Calendar newDay) {
+        cal = newDay;
+        dateString = Util.getDateString(cal);
         textDate.setText(Util.getDateWeekString(cal));
     }
 
@@ -244,8 +222,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void updateTotalPrice() {
         Log.d(LOG_TAG, "update total price");
-        textTotalPrice.setText(String.format("总价￥%s", ParseManager.getInstance().getTotalPriceByDate(Util.getDateString(cal))));
-        if(true == ParseManager.getInstance().isOrderCountChanged(Util.getDateString(cal)))
+        textTotalPrice.setText(String.format("总价￥%s", ParseManager.getInstance().getTotalPriceByDate(dateString)));
+        if(true == ParseManager.getInstance().isOrderCountChanged(dateString))
         {
             textTotalPrice.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.colorTotalPriceChanged));
         }
