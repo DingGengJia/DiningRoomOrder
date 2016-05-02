@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public void onProcessFailed(BusinessRequest request) {
+    public void onProcessFailed(BusinessRequest request, int statusCode, Header[] headers, byte[] response) {
         Toast.makeText(LoginActivity.this, "连接超时，请检查网络连接", Toast.LENGTH_SHORT).show();
     }
 }

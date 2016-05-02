@@ -32,4 +32,9 @@ public class Util {
     }
 
 
+    public static String getDateTimeString(Calendar cal) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        String strDate = sdf.format(cal.getTime());
+        return sdf.format(cal.getTime());
+    }
 }

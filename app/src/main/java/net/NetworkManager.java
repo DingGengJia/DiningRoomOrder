@@ -32,29 +32,29 @@ public class NetworkManager implements AsyncHttpClientInterface {
 
     private AsyncHttpClient client = new AsyncHttpClient();
 
-    public void sendGetRequst(BusinessRequest request, IBusinessDeleage deleage) {
+    public void sendGetRequst(BusinessRequest request, HttpEntity entity, IBusinessDeleage deleage) {
         Log.d(LOG_TAG, "url=" + request.getUrl());
 
-//        PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
-//        client.setCookieStore(myCookieStore);
+        PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
+        client.setCookieStore(myCookieStore);
 
         addRequestHandle(executeGet(client,
                 request,
                 getRequestHeaders(),
-                getRequestEntity(),
+                entity,
                 getResponseHandler(request, deleage)));
     }
 
-    public void sendPostRequst(BusinessRequest request, IBusinessDeleage deleage) {
+    public void sendPostRequst(BusinessRequest request, HttpEntity entity, IBusinessDeleage deleage) {
         Log.d(LOG_TAG, "url=" + request.getUrl());
 
-//        PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
-//        client.setCookieStore(myCookieStore);
+        PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
+        client.setCookieStore(myCookieStore);
 
         addRequestHandle(executePost(client,
                 request,
                 getRequestHeaders(),
-                getRequestEntity(),
+                entity,
                 getResponseHandler(request, deleage)));
     }
 
@@ -119,7 +119,7 @@ public class NetworkManager implements AsyncHttpClientInterface {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
                 Log.d(LOG_TAG, "========onFailure ");
-                mDeleage.onProcessFailed(mRequest);
+                mDeleage.onProcessFailed(mRequest, statusCode, headers, errorResponse);
             }
         };
     }
@@ -150,7 +150,7 @@ public class NetworkManager implements AsyncHttpClientInterface {
 
     public RequestHandle executePost(AsyncHttpClient client, BusinessRequest request, Header[] headers, HttpEntity entity, ResponseHandlerInterface responseHandler) {
         String URL = request.getUrl();
-        return client.post(mContext, URL, headers, entity, null, responseHandler);
+        return client.post(mContext, URL, headers, entity, "application/json", responseHandler);
     }
 
     /**

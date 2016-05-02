@@ -10,6 +10,7 @@ public interface IBusinessManager {
 
     //meal
     public void requestMeal(String date, IBusinessDeleage delegate);
-    //save meal
 
+    //save meal
+    public void requestSaveUserMeal(String date, String sel, IBusinessDeleage delegate);
 }

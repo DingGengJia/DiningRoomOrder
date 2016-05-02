@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void onNewDay(Calendar newDay) {
         updateDate(newDay);
 
-        BusinessManager.getInstance(this).requestMeal(dateString, this);
+        BusinessManager.getInstance(MainActivity.this).requestMeal(dateString, this);
 
         // TODO temp, to delte
 //        String jsonData = new String("[{\"MealID\":\"40645517-aeb2-4c15-ab12-0e6d33d6101d\",\"DishID\":\"867242a3-e941-42aa-bc0d-8d8a1455e9e8\",\"DishName\":\"标准早餐\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":1},{\"MealID\":\"4237e174-de34-4cfb-9a93-41c5ecc0f602\",\"DishID\":\"a942df11-28d9-42f2-88ab-17a08c93f4a6\",\"DishName\":\"银鹭花生牛奶\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":1},{\"MealID\":\"35b1a1f1-0e4d-4c83-b2a2-96b0f0ed4e5e\",\"DishID\":\"2320b69a-ee2b-4df0-8894-5e95493a4a9f\",\"DishName\":\"茶叶蛋\",\"OriPrice\":2,\"DishPrice\":2,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0},{\"MealID\":\"ebee260d-f5c1-4803-9a1e-c38e78030833\",\"DishID\":\"2660172f-c970-4666-b83c-86069ac19bf3\",\"DishName\":\"优酸乳\",\"OriPrice\":2,\"DishPrice\":2,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0},{\"MealID\":\"9c7953f7-31b8-4e11-b48e-ea027ae3384b\",\"DishID\":\"67eac511-27af-4e8d-96ff-2ca3d453254c\",\"DishName\":\"晨光甜牛奶\",\"OriPrice\":3,\"DishPrice\":3,\"DishLimitCount\":0,\"ResidueCount\":-1,\"OrderCount\":0}]");
@@ -149,7 +149,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(DialogInterface dialog, int which) {
                 Log.d(LOG_TAG, "confrim data change");
                 dialog.dismiss();
-                // TODO commit change
+                String selString = ParseManager.getInstance().getMealString(dateString);
+                BusinessManager.getInstance(MainActivity.this).requestSaveUserMeal(Util.getDateTimeString(cal), selString, MainActivity.this);
                 ParseManager.getInstance().clearDataChangeFlag(dateString);
                 updateTotalPrice();
             }
@@ -194,10 +195,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onProcessSuccess(BusinessRequest request, int statusCode, Header[] headers, byte[] response, IBusinessDeleage deleage) {
+        switch (request.getId()) {
+            case BusinessRequest.REQEUST_ID_GET_MEAL:
+                Log.d(LOG_TAG, "process get meal success");
+                MealRequest mealRequest = (MealRequest) request;
+                String jsonData = new String(response);
+                displayMealData(mealRequest.getDate(), mealRequest.getType(), jsonData);
+                break;
+            case BusinessRequest.REQEUST_ID_SAVE_USER_MEAL:
+                Log.d(LOG_TAG, "process save user meal success");
+                break;
+        }
+    }
 
-        MealRequest mealRequest = (MealRequest) request;
-        String jsonData = new String(response);
-        displayMealData(mealRequest.getDate(), mealRequest.getType(), jsonData);
+    @Override
+    public void onProcessFailed(BusinessRequest request, int statusCode, Header[] headers, byte[] response) {
+        switch (request.getId()) {
+            case BusinessRequest.REQEUST_ID_GET_MEAL:
+                Log.d(LOG_TAG, "process get meal failed");
+                Toast.makeText(MainActivity.this, "请求超时，请检查网络连接", Toast.LENGTH_SHORT).show();
+                break;
+            case BusinessRequest.REQEUST_ID_SAVE_USER_MEAL:
+                Log.d(LOG_TAG, "process save user meal failed");
+                Log.d(LOG_TAG, "statuscode:" + statusCode);
+                Log.d(LOG_TAG, "resonse:" + new String(response));
+                break;
+        }
     }
 
     private void displayMealData(String date, int type, String jsonData) {
@@ -223,19 +246,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void updateTotalPrice() {
         Log.d(LOG_TAG, "update total price");
         textTotalPrice.setText(String.format("总价￥%s", ParseManager.getInstance().getTotalPriceByDate(dateString)));
-        if(true == ParseManager.getInstance().isOrderCountChanged(dateString))
-        {
+        if (true == ParseManager.getInstance().isOrderCountChanged(dateString)) {
             textTotalPrice.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.colorTotalPriceChanged));
-        }
-        else
-        {
+        } else {
             textTotalPrice.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.colorTotalPriceNormal));
         }
-    }
-
-    @Override
-    public void onProcessFailed(BusinessRequest request) {
-        Toast.makeText(MainActivity.this, "请求超时，请检查网络连接", Toast.LENGTH_SHORT).show();
     }
 
     @Override

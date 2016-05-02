@@ -12,6 +12,7 @@ public class MealRequest extends BusinessRequest {
     private int type;
 
     public MealRequest(String date, int type) {
+        setId(BusinessRequest.REQEUST_ID_GET_MEAL);
         setDate(date);
         setType(type);
         String url = urlHead + "?date=" + date + "&type=" + type;

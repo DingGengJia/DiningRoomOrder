@@ -13,6 +13,7 @@ public class LoginRequest extends BusinessRequest {
     String password;
 
     public LoginRequest(String username, String password) {
+        setId(BusinessRequest.REQEUST_ID_LOGIN);
         setUsername(username);
         setPassword(password);
         String url = urlHead + "?UserName=" + username + "&Password=" + password + "&AutoLogin=false";
