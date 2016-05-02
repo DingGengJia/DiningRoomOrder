@@ -8,6 +8,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestHandle;
+import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.ResponseHandlerInterface;
 
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class NetworkManager implements AsyncHttpClientInterface {
                 getResponseHandler(request, deleage)));
     }
 
-    public void sendPostRequst(BusinessRequest request, HttpEntity entity, IBusinessDeleage deleage) {
+    public void sendPostRequst(BusinessRequest request, Header[] headers, HttpEntity entity, IBusinessDeleage deleage) {
         Log.d(LOG_TAG, "url=" + request.getUrl());
 
         PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
@@ -58,6 +59,17 @@ public class NetworkManager implements AsyncHttpClientInterface {
                 getResponseHandler(request, deleage)));
     }
 
+    public void sendPostRequst(BusinessRequest request, RequestParams params, IBusinessDeleage deleage) {
+        Log.d(LOG_TAG, "url=" + request.getUrl());
+
+        PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
+        client.setCookieStore(myCookieStore);
+
+        addRequestHandle(executePost(client,
+                request,
+                params,
+                getResponseHandler(request, deleage)));
+    }
     @Override
     public void addRequestHandle(RequestHandle handle) {
 
@@ -108,8 +120,8 @@ public class NetworkManager implements AsyncHttpClientInterface {
                 }
 
                 //获取AsyncHttpClient中的CookieStore
-//                PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
-//                client.setCookieStore(myCookieStore);
+                PersistentCookieStore myCookieStore = new PersistentCookieStore(mContext);
+                client.setCookieStore(myCookieStore);
 
 //                Toast.makeText(mContext, "登录成功，cookie=" + getCookieText(), Toast.LENGTH_SHORT).show();
 
@@ -153,6 +165,10 @@ public class NetworkManager implements AsyncHttpClientInterface {
         return client.post(mContext, URL, headers, entity, "application/json", responseHandler);
     }
 
+    public RequestHandle executePost(AsyncHttpClient client, BusinessRequest request, RequestParams params, ResponseHandlerInterface responseHandler) {
+        String URL = request.getUrl();
+        return client.post(mContext, URL, params, responseHandler);
+    }
     /**
      * 获取标准 Cookie
      */

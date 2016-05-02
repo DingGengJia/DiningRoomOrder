@@ -3,14 +3,11 @@ package net;
 import android.content.Context;
 import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
+import com.loopj.android.http.RequestParams;
 
 import bean.MealList;
+import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpEntity;
-import cz.msebera.android.httpclient.entity.StringEntity;
 import logic.LoginRequest;
 import logic.MealRequest;
 import logic.SaveUserMealRequest;
@@ -43,21 +40,25 @@ public class BusinessManager implements IBusinessManager {
         networkManager.sendGetRequst(request, entity, deleage);
     }
 
-    private void sendPostRequest(BusinessRequest request, HttpEntity entity, IBusinessDeleage deleage) {
-        networkManager.sendPostRequst(request, entity, deleage);
+    private void sendPostRequest(BusinessRequest request, Header[] headers, HttpEntity entity, IBusinessDeleage deleage) {
+        networkManager.sendPostRequst(request, headers, entity, deleage);
+    }
+
+    private void sendPostRequest(BusinessRequest request, RequestParams params, IBusinessDeleage deleage) {
+        networkManager.sendPostRequst(request, params, deleage);
     }
 
     @Override
     public void requestLogin(String name, String psd, IBusinessDeleage delegate) {
         LoginRequest request = new LoginRequest(name, psd);
-        sendPostRequest(request, null, delegate);
+        sendPostRequest(request, null, null, delegate);
     }
 
     @Override
     public void requestMeal(String date, IBusinessDeleage delegate) {
         for (int i : MealList.getMealType()) {
             MealRequest request = new MealRequest(date, i);
-            sendPostRequest(request, null, delegate);
+            sendPostRequest(request, null, null, delegate);
         }
     }
 
@@ -68,36 +69,9 @@ public class BusinessManager implements IBusinessManager {
         Log.d(LOG_TAG, "date:" + date);
         Log.d(LOG_TAG, "sel:" + sel);
         SaveUserMealRequest request = new SaveUserMealRequest(date, sel);
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("sel", sel);
-            jsonObject.put("date", date);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        StringEntity entity = null;
-        try {
-            entity = new StringEntity(jsonObject.toString());
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        sendPostRequest(request, entity, delegate);
-
-
-//        String content = "sel=" + sel + "&date=" + date;
-//        Log.d(LOG_TAG, "content:" + content);
-//        try {
-//            content = "sel=" + URLEncoder.encode(sel, "UTF-8") + "&date=" + URLEncoder.encode(date, "UTF-8");
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//        Log.d(LOG_TAG, "encoded content:" + content);
-//        HttpEntity entity = null;
-//        try {
-//            entity = new StringEntity(content);
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//        sendPostRequest(request, entity, delegate);
+        RequestParams params = new RequestParams();
+        params.put("sel", sel);
+        params.put("date", date);
+        sendPostRequest(request, params, delegate);
     }
 }
