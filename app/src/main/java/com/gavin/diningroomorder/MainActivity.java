@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ArrayAdapter arrayAdapter;
     Meal numberPickerMeal;
     private String dateString;
+    private boolean goToNewDay;
+    Calendar newDay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,16 +129,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void dealOnNewDay(Calendar newDay) {
-        checkSaveData();
-        onNewDay(newDay);
+        goToNewDay = true;
+        this.newDay = newDay;
+        if(false == checkSaveData())
+        {
+            onNewDay(newDay);
+        }
     }
 
-    private void checkSaveData() {
+    private boolean checkSaveData() {
         if (true == ParseManager.getInstance().isOrderCountChanged(dateString)) {
             Log.d(LOG_TAG, "go to next day with data changed");
             showCheckDialog();
+            return true;
         } else {
             Log.d(LOG_TAG, "go to next day with no data changed");
+            return false;
         }
     }
 
@@ -151,8 +159,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 dialog.dismiss();
                 String selString = ParseManager.getInstance().getMealString(dateString);
                 BusinessManager.getInstance(MainActivity.this).requestSaveUserMeal(Util.getDateTimeString(cal), selString, MainActivity.this);
-                ParseManager.getInstance().clearDataChangeFlag(dateString);
-                updateTotalPrice();
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -169,6 +175,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         cal = newDay;
         dateString = Util.getDateString(cal);
         textDate.setText(Util.getDateWeekString(cal));
+        goToNewDay = false;
+        newDay = null;
     }
 
     private int getViewIdByMealType(int type) {
@@ -204,6 +212,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case BusinessRequest.REQEUST_ID_SAVE_USER_MEAL:
                 Log.d(LOG_TAG, "process save user meal success");
+                if (statusCode == 200) {
+                    Toast.makeText(MainActivity.this, "提交成功", Toast.LENGTH_SHORT).show();
+                    ParseManager.getInstance().clearDataChangeFlag(dateString);
+                    updateTotalPrice();
+                    if (true == goToNewDay) {
+                        onNewDay(newDay);
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, "提交失败", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }
