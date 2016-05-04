@@ -23,6 +23,9 @@ import net.BusinessManager;
 import net.BusinessRequest;
 import net.IBusinessDeleage;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Calendar;
 import java.util.List;
 
@@ -117,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 nextDay(day);
                 break;
             case R.id.totalPrice:
-                checkSaveData();
+                checkSaveData(false);
                 break;
         }
     }
@@ -131,16 +134,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void dealOnNewDay(Calendar newDay) {
         goToNewDay = true;
         this.newDay = newDay;
-        if(false == checkSaveData())
+        if(false == checkSaveData(true))
         {
             onNewDay(newDay);
         }
     }
 
-    private boolean checkSaveData() {
+    private boolean checkSaveData(boolean isGoToNewDay) {
         if (true == ParseManager.getInstance().isOrderCountChanged(dateString)) {
             Log.d(LOG_TAG, "go to next day with data changed");
-            showCheckDialog();
+            showCheckDialog(isGoToNewDay);
             return true;
         } else {
             Log.d(LOG_TAG, "go to next day with no data changed");
@@ -148,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void showCheckDialog() {
+    private void showCheckDialog(final boolean isGoToNewDay) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setMessage("订餐数据有变更，需要提交吗？");
         builder.setTitle("提示");
@@ -156,9 +159,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.d(LOG_TAG, "confrim data change of date " + Util.getDateTimeString(cal));
-                dialog.dismiss();
-                String selString = ParseManager.getInstance().getMealString(dateString);
-                BusinessManager.getInstance(MainActivity.this).requestSaveUserMeal(Util.getDateTimeString(cal), selString, MainActivity.this);
+
+                if(ParseManager.getInstance().isPriceEnough(dateString))
+                {
+                    dialog.dismiss();
+                    String selString = ParseManager.getInstance().getMealString(dateString);
+                    BusinessManager.getInstance(MainActivity.this).requestSaveUserMeal(Util.getDateTimeString(cal), selString, MainActivity.this);
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.this, "操作失败。原因：午餐及晚餐不能小于7元。", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -166,6 +177,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(DialogInterface dialog, int which) {
                 Log.d(LOG_TAG, "cancel data change");
                 dialog.dismiss();
+                if(isGoToNewDay)
+                {
+                    onNewDay(newDay);
+                }
             }
         });
         builder.create().show();
@@ -176,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dateString = Util.getDateString(cal);
         textDate.setText(Util.getDateWeekString(cal));
         goToNewDay = false;
-        newDay = null;
+        this.newDay = null;
     }
 
     private int getViewIdByMealType(int type) {
@@ -211,16 +226,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 displayMealData(mealRequest.getDate(), mealRequest.getType(), jsonData);
                 break;
             case BusinessRequest.REQEUST_ID_SAVE_USER_MEAL:
-                Log.d(LOG_TAG, "process save user meal success");
-                if (statusCode == 200) {
-                    Toast.makeText(MainActivity.this, "提交成功", Toast.LENGTH_SHORT).show();
-                    ParseManager.getInstance().clearDataChangeFlag(dateString);
-                    updateTotalPrice();
-                    if (true == goToNewDay) {
-                        onNewDay(newDay);
+                try {
+                    JSONObject jsonObject = new JSONObject(new String(response));
+                    if(jsonObject.getInt("statusCode") == 200)
+                    {
+                        Log.d(LOG_TAG, "process save user meal success");
+                        Toast.makeText(MainActivity.this, "提交成功", Toast.LENGTH_SHORT).show();
+                        ParseManager.getInstance().clearDataChangeFlag(dateString);
+                        updateTotalPrice();
+                        if (true == goToNewDay) {
+                            onNewDay(newDay);
+                        }
                     }
-                } else {
-                    Toast.makeText(MainActivity.this, "提交失败", Toast.LENGTH_SHORT).show();
+                    else
+                    {
+                        Log.d(LOG_TAG, "process save user meal failed");
+                        Toast.makeText(MainActivity.this, jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
                 break;
         }

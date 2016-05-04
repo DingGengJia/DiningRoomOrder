@@ -19,6 +19,7 @@ public class MealList {
     private int Type;
 
     private List<Meal> mMealList = new ArrayList<Meal>();
+    private static int iMinPrice = 7;
 
     public MealList(String date, int type, String jsonString) {
         if (jsonString == null) return;
@@ -67,4 +68,27 @@ public class MealList {
         return mealType;
     }
 
+    // 午餐、晚餐不能少于7元
+    public boolean isPirceEnough()
+    {
+        if(Type != 2 && Type != 3)
+        {
+            return true;
+        }
+
+        int iTotalPrice = 0;
+        for(Meal meal : mMealList)
+        {
+            iTotalPrice += meal.getOrderCount() * meal.getDishPrice();
+        }
+
+        if(iTotalPrice >= iMinPrice || iTotalPrice == 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

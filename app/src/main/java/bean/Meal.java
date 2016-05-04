@@ -132,6 +132,7 @@ public class Meal {
 
     public void clearDataChangeFlag() {
         isChanged = false;
+        SourceOrderCount = OrderCount;
     }
 
     public boolean isDataChanged() {

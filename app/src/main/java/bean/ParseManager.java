@@ -125,4 +125,20 @@ public class ParseManager {
 
         return mealString;
     }
+
+    public boolean isPriceEnough(String date)
+    {
+        List<MealList> mealLists = new ArrayList<>();
+        for (int i : MealList.getMealType()) {
+            MealList mealList = getMealByDate(date, i);
+            if (mealList != null) {
+                if(false == mealList.isPirceEnough())
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }
