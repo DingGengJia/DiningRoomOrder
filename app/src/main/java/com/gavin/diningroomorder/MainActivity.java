@@ -160,14 +160,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(DialogInterface dialog, int which) {
                 Log.d(LOG_TAG, "confrim data change of date " + Util.getDateTimeString(cal));
 
-                if(ParseManager.getInstance().isPriceEnough(dateString))
-                {
+                if (ParseManager.getInstance().isPriceEnough(dateString)) {
                     dialog.dismiss();
                     String selString = ParseManager.getInstance().getMealString(dateString);
                     BusinessManager.getInstance(MainActivity.this).requestSaveUserMeal(Util.getDateTimeString(cal), selString, MainActivity.this);
-                }
-                else
-                {
+                } else {
                     Toast.makeText(MainActivity.this, "操作失败。原因：午餐及晚餐不能小于7元。", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -272,15 +269,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         InnerListView list = (InnerListView) findViewById(getViewIdByMealType(type));
 
         list.setAdapter(adapter);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Meal meal = adapter.getItem(position);
-                arrayAdapter = adapter;
-                numberPickerMeal = meal;
-                showPopupWindow(view, meal);
-            }
-        });
+        if(ParseManager.getInstance().isShowAllMeal(date)) {
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Meal meal = adapter.getItem(position);
+                    arrayAdapter = adapter;
+                    numberPickerMeal = meal;
+                    showPopupWindow(view, meal);
+                }
+            });
+        }
 
         updateTotalPrice();
     }

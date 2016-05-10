@@ -32,7 +32,11 @@ public class MealList {
                 Meal meal = new Meal(jsonObject);
                 meal.setDate(date);
                 meal.setType(type);
-                mMealList.add(meal);
+
+                // 两天之后的才展示详细食堂排餐信息，之前的只展示点餐信息
+                if(ParseManager.getInstance().isShowAllMeal(date) || meal.getOrderCount() > 0) {
+                    mMealList.add(meal);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();

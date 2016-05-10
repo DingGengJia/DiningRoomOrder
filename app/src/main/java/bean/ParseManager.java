@@ -3,11 +3,14 @@ package bean;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import util.Util;
 
 /**
  * Created by gavin on 9/4/16.
@@ -140,5 +143,21 @@ public class ParseManager {
         }
 
         return true;
+    }
+
+    public boolean isShowAllMeal(String date)
+    {
+        Calendar cal = Calendar.getInstance();
+
+        int iDays = Util.daysBetween(date, Util.getDateString(cal));
+
+        if(iDays > 1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
